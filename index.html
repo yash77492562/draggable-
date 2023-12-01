@@ -33,55 +33,93 @@
             $('.temp').each(function () {
                 const $element = $(this);
 
-                $element.draggable({
-                    containment: false, // Contain within their parent element
-                    scroll: false,
-                    start: function (event, ui) {
-                        if (!rotationEnabled) {
-                            // Store the original position before dragging
-                            ui.originalPosition = ui.position;
+                $element
+                    .draggable({
+                        containment: false, // Contain within their parent element
+                        scroll: false,
+                        start: function (event, ui) {
+                            if (!rotationEnabled) {
+                                // Store the original position before dragging
+                                ui.originalPosition = ui.position;
+                            }
                         }
-                    }
-                }).resizable({
-                    containment: false,
-                    handles: 'n, e, s, w, ne, se, sw, nw',
-                    start: function (event, ui) {
-                        if (!rotationEnabled) {
-                            // Store the original width and height before resizing
+                    })
+                    .resizable({
+                        containment: false,
+                        handles: 'n, e, s, w, ne, se, sw, nw',
+                        start: function (event, ui) {
+                            if (!rotationEnabled) {
+                                // Store the original width and height before resizing
+                                ui.originalSize = ui.size;
+                            }
+                        },
+                        resize: function (event, ui) {
+                            if (!rotationEnabled) {
+                                // Check if user is increasing or decreasing size
+                                const increasingSize =
+                                    ui.size.width > ui.originalSize.width &&
+                                    ui.size.height > ui.originalSize.height;
+
+                                if (increasingSize) {
+                                    // If increasing size, remove min-width and min-height
+                                    $element.find('img').css({
+                                        'min-width': '',
+                                        'min-height': ''
+                                    });
+                                } else {
+                                    // If decreasing size, set min-width and min-height
+                                    $element.find('img').css({
+                                        'min-width': previousWidth + 'px',
+                                        'min-height': previousHeight + 'px'
+                                    });
+                                }
+
+                                // Update the previous width and height
+                                previousWidth = ui.size.width;
+                                previousHeight = ui.size.height;
+                            }
+                        },
+                        stop: function (event, ui) {
+                            // Update original size after resizing is complete
                             ui.originalSize = ui.size;
                         }
-                    },
-                    resize: function (event, ui) {
-                        if (!rotationEnabled) {
-                            // Check if user is increasing or decreasing size
-                            const increasingSize =
-                                ui.size.width > ui.originalSize.width &&
-                                ui.size.height > ui.originalSize.height;
+                    });
+            });
 
-                            if (increasingSize) {
-                                // If increasing size, remove min-width and min-height
-                                $element.find('img').css({
-                                    'min-width': '',
-                                    'min-height': ''
-                                });
-                            } else {
-                                // If decreasing size, set min-width and min-height
-                                $element.find('img').css({
-                                    'min-width': previousWidth + 'px',
-                                    'min-height': previousHeight + 'px'
-                                });
-                            }
+            // Add support for two-finger gesture resizing
+            let pinchStartDistance;
 
-                            // Update the previous width and height
-                            previousWidth = ui.size.width;
-                            previousHeight = ui.size.height;
-                        }
-                    },
-                    stop: function (event, ui) {
-                        // Update original size after resizing is complete
-                        ui.originalSize = ui.size;
-                    }
-                });
+            $('.temp').on('touchstart', function (event) {
+                if (event.originalEvent.touches.length === 2) {
+                    const touch1 = event.originalEvent.touches[0];
+                    const touch2 = event.originalEvent.touches[1];
+                    pinchStartDistance = Math.hypot(
+                        touch2.clientX - touch1.clientX,
+                        touch2.clientY - touch1.clientY
+                    );
+                }
+            });
+
+            $('.temp').on('gesturechange', function (event) {
+                event.preventDefault();
+
+                if (event.originalEvent.scale && pinchStartDistance) {
+                    const pinchEndDistance = pinchStartDistance * event.originalEvent.scale;
+                    const scaleRatio = pinchEndDistance / pinchStartDistance;
+
+                    // Adjust the width and height based on the pinch gesture
+                    const currentWidth = $(this).width();
+                    const currentHeight = $(this).height();
+                    const newWidth = currentWidth * scaleRatio;
+                    const newHeight = currentHeight * scaleRatio;
+
+                    $(this).width(newWidth);
+                    $(this).height(newHeight);
+                }
+            });
+
+            $('.temp').on('gestureend', function () {
+                pinchStartDistance = null;
             });
         }
 
