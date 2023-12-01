@@ -20,8 +20,8 @@
     <!-- Include jQuery UI -->
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
-    <!-- Include jQuery UI Touch Punch -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+    <!-- Include Hammer.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
 
     <!-- Your existing code for draggable and resizable elements -->
     <script>
@@ -84,42 +84,22 @@
                             ui.originalSize = ui.size;
                         }
                     });
-            });
 
-            // Add support for two-finger gesture resizing
-            let pinchStartDistance;
-
-            $('.temp').on('touchstart', function (event) {
-                if (event.originalEvent.touches.length === 2) {
-                    const touch1 = event.originalEvent.touches[0];
-                    const touch2 = event.originalEvent.touches[1];
-                    pinchStartDistance = Math.hypot(
-                        touch2.clientX - touch1.clientX,
-                        touch2.clientY - touch1.clientY
-                    );
-                }
-            });
-
-            $('.temp').on('gesturechange', function (event) {
-                event.preventDefault();
-
-                if (event.originalEvent.scale && pinchStartDistance) {
-                    const pinchEndDistance = pinchStartDistance * event.originalEvent.scale;
-                    const scaleRatio = pinchEndDistance / pinchStartDistance;
+                // Enable Hammer.js for pinch gestures
+                const hammer = new Hammer(this);
+                hammer.get('pinch').set({ enable: true });
+                hammer.on('pinch', function (event) {
+                    const scale = event.scale;
 
                     // Adjust the width and height based on the pinch gesture
-                    const currentWidth = $(this).width();
-                    const currentHeight = $(this).height();
-                    const newWidth = currentWidth * scaleRatio;
-                    const newHeight = currentHeight * scaleRatio;
+                    const currentWidth = $element.width();
+                    const currentHeight = $element.height();
+                    const newWidth = currentWidth * scale;
+                    const newHeight = currentHeight * scale;
 
-                    $(this).width(newWidth);
-                    $(this).height(newHeight);
-                }
-            });
-
-            $('.temp').on('gestureend', function () {
-                pinchStartDistance = null;
+                    $element.width(newWidth);
+                    $element.height(newHeight);
+                });
             });
         }
 
