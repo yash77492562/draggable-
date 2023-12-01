@@ -4,97 +4,91 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CUSTOM PAGE</title>
-    <script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.1.13/jquery.mousewheel.min.js"></script>
-
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <!-- Include Swiper CSS -->
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" /> 
     <link rel="stylesheet" href="./common.css">
     <link rel="stylesheet" href="./shop.css">   
 </head>
 <body>
-    <div class="temp temp35 special example1-image z-medium  position-absolute " draggable="true">
+    <div class="temp temp35 special example1-image z-medium position-absolute" draggable="true">
         <img src="./image/shop1.webp" alt="" class="cover-parent image-fill draggable-image">
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <!-- Include jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
-<!-- Include jQuery UI -->
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <!-- Include jQuery UI -->
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
-<!-- Include jQuery UI Touch Punch -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+    <!-- Include jQuery UI Touch Punch -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
 
-<!-- Your existing code for draggable and resizable elements -->
-<script>
-  function initializeDraggableAndResizable() {
-    let previousWidth = 0;
-    let previousHeight = 0;
-    let rotationEnabled = false;
+    <!-- Your existing code for draggable and resizable elements -->
+    <script>
+        function initializeDraggableAndResizable() {
+            let previousWidth = 0;
+            let previousHeight = 0;
+            let rotationEnabled = false;
 
-    $('.temp').each(function () {
-        const $element = $(this);
+            $('.temp').each(function () {
+                const $element = $(this);
 
-        $element.draggable({
-            containment: 'false', // Contain within their parent element
-            scroll: false,
-            start: function (event, ui) {
-                if (!rotationEnabled) {
-                    // Store the original position before dragging
-                    ui.originalPosition = ui.position;
-                }
-            }
-        }).resizable({
-            containment: false,
-            handles: 'n, e, s, w, ne, se, sw, nw',
-            start: function (event, ui) {
-                if (!rotationEnabled) {
-                    // Store the original width and height before resizing
-                    ui.originalSize = ui.size;
-                }
-            },
-            resize: function (event, ui) {
-                if (!rotationEnabled) {
-                    // Check if user is increasing or decreasing size
-                    const increasingSize =
-                        ui.size.width > ui.originalSize.width &&
-                        ui.size.height > ui.originalSize.height;
-
-                    if (increasingSize) {
-                        // If increasing size, remove min-width and min-height
-                        $element.find('img').css({
-                            'min-width': '',
-                            'min-height': ''
-                        });
-                    } else {
-                        // If decreasing size, set min-width and min-height
-                        $element.find('img').css({
-                            'min-width': previousWidth + 'px',
-                            'min-height': previousHeight + 'px'
-                        });
+                $element.draggable({
+                    containment: false, // Contain within their parent element
+                    scroll: false,
+                    start: function (event, ui) {
+                        if (!rotationEnabled) {
+                            // Store the original position before dragging
+                            ui.originalPosition = ui.position;
+                        }
                     }
+                }).resizable({
+                    containment: false,
+                    handles: 'n, e, s, w, ne, se, sw, nw',
+                    start: function (event, ui) {
+                        if (!rotationEnabled) {
+                            // Store the original width and height before resizing
+                            ui.originalSize = ui.size;
+                        }
+                    },
+                    resize: function (event, ui) {
+                        if (!rotationEnabled) {
+                            // Check if user is increasing or decreasing size
+                            const increasingSize =
+                                ui.size.width > ui.originalSize.width &&
+                                ui.size.height > ui.originalSize.height;
 
-                    // Update the previous width and height
-                    previousWidth = ui.size.width;
-                    previousHeight = ui.size.height;
-                }
-            },
-            stop: function (event, ui) {
-                // Update original size after resizing is complete
-                ui.originalSize = ui.size;
-            }
+                            if (increasingSize) {
+                                // If increasing size, remove min-width and min-height
+                                $element.find('img').css({
+                                    'min-width': '',
+                                    'min-height': ''
+                                });
+                            } else {
+                                // If decreasing size, set min-width and min-height
+                                $element.find('img').css({
+                                    'min-width': previousWidth + 'px',
+                                    'min-height': previousHeight + 'px'
+                                });
+                            }
+
+                            // Update the previous width and height
+                            previousWidth = ui.size.width;
+                            previousHeight = ui.size.height;
+                        }
+                    },
+                    stop: function (event, ui) {
+                        // Update original size after resizing is complete
+                        ui.originalSize = ui.size;
+                    }
+                });
+            });
+        }
+
+        // Wait for the document to be ready before initializing
+        $(document).ready(function () {
+            initializeDraggableAndResizable();
         });
-    });
-  }
-
-  initializeDraggableAndResizable();
-</script>
-
-
+    </script>
 </body>
 </html>
